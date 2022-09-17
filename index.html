@@ -1,7 +1,18 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Coding Basics</title>
+    <title>Beat That!</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT"
+      crossorigin="anonymous"
+    />
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8"
+      crossorigin="anonymous"
+    ></script>
     <style>
       * {
         box-sizing: border-box;
@@ -15,13 +26,23 @@
 
       #header {
         text-align: center;
+        margin-top: 1.25em;
       }
 
       #container {
-        background-color: pink;
+        background-color: lightgray;
+        margin: 40px auto;
+        max-width: 800px;
+        padding: 38px 31px 38px;
+        border-radius: 25px;
+      }
+
+      #output-box {
+        background-color: lightgray;
         margin: 40px auto;
         max-width: 800px;
         padding: 38px 31px;
+        border-radius: 25px;
       }
 
       input {
@@ -32,49 +53,184 @@
         width: 100%;
       }
 
+      #dice-field {
+        font-size: 21px;
+        line-height: 33px;
+        margin: 0 0 0 0;
+        padding: 0 9px;
+        width: 30%;
+      }
+
+      #player-field {
+        font-size: 21px;
+        line-height: 33px;
+        margin: 0 0 0 0;
+        padding: 0 9px;
+        width: 30%;
+      }
+
       button {
         font-size: 21px;
         line-height: 33px;
-        margin: 0 0 23px 0;
+        margin: 0 0 38px 0;
         padding: 0 6px;
       }
 
       #output-div {
-        background-color: lightgrey;
+        background-color: whitesmoke;
         margin: 20px auto;
         padding: 20px;
         width: 100%;
       }
+
+      #intro-div {
+        background-color: whitesmoke;
+        margin: auto;
+        padding: 20px;
+        width: 100%;
+        text-align: center;
+      }
+
+      #form-control {
+        display: "block";
+      }
     </style>
   </head>
-
   <body>
-    <h1 id="header">Basics: Beat That! 🚀</h1>
+    <h1 id="header"><b>👊 Beat That! 👊</b></h1>
     <div id="container">
-      <p>Input:</p>
-      <input id="input-field" />
+      <div id="intro-div"></div>
       <br />
-      <button id="submit-button">Submit</button>
-      <p>Output:</p>
+      <p>Please select game mode:</p>
+      <button id="highest-button" class="btn btn-dark">
+        Highest (Default)
+      </button>
+      <button id="lowest-button" class="btn btn-secondary">Lowest</button>
+      <p>Please select game difficulty:</p>
+      <button id="normal-button" class="btn btn-light">Normal (Default)</button>
+      <button id="knockout-button" class="btn btn-danger">Knockout</button>
+
+      <div class="row g-2">
+        <div class="col-md">
+          <div class="form-floating">
+            <input
+              type="number"
+              class="form-control"
+              id="floatingInputGrid"
+              placeholder="2"
+              min="2"
+            />
+            <label for="dice-field" id="dice">🎲🎲</label>
+          </div>
+        </div>
+        <div class="col-md">
+          <div class="form-floating">
+            <input
+              type="number"
+              class="form-control"
+              id="players-field"
+              placeholder="2"
+              min="2"
+            />
+            <label for="players-field" id="players">👨👩</label>
+          </div>
+        </div>
+      </div>
+
+      <div>Input:<input id="input-field" disabled /></div>
+
+      <button id="submit-button" class="btn btn-primary" style="float: right">
+        Submit
+      </button>
+      <button
+        id="auto-button"
+        class="btn btn-warning"
+        style="float: left"
+        disabled
+      >
+        Choose for me
+      </button>
+      <br />
+    </div>
+    <div id="output-box">
+      <p><b>Message/Scoreboard:</b></p>
       <div id="output-div"></div>
     </div>
-    <!-- Import program logic -->
     <script src="script.js"></script>
-    <!-- Define button click functionality -->
     <script>
+      // Declare and define a variable that represents the Submit Button
       var button = document.querySelector("#submit-button");
       button.addEventListener("click", function () {
-        // Set result to input value
         var input = document.querySelector("#input-field");
-        var result = main(input.value);
+        var numberOfDice = document.querySelector("#floatingInputGrid");
+        var numberOfPlayers = document.querySelector("#players-field");
+        var result = main(
+          numberOfDice.value,
+          numberOfPlayers.value,
+          input.value
+        );
+        var scoreboard = getScoreboardMessage();
 
         // Display result in output element
+        var intro = document.querySelector("#intro-div");
+        intro.innerHTML = result;
         var output = document.querySelector("#output-div");
-        output.innerHTML = result;
+        output.innerHTML = scoreboard;
 
         // Reset input value
         input.value = "";
       });
+
+      var button = document.querySelector("#auto-button");
+      button.addEventListener("click", function () {
+        var input = Number(generateNumber(diceRolls));
+        var numberOfDice = document.querySelector("#floatingInputGrid");
+        var numberOfPlayers = document.querySelector("#players-field");
+        console.log("input", input);
+        var result = main(numberOfDice.value, numberOfPlayers.value, input);
+        var scoreboard = getScoreboardMessage();
+
+        // Display result in output element
+        var intro = document.querySelector("#intro-div");
+        intro.innerHTML = result;
+        var output = document.querySelector("#output-div");
+        output.innerHTML = scoreboard;
+
+        // Reset input value
+        input.value = "";
+      });
+
+      var button = document.querySelector("#highest-button");
+      button.addEventListener("click", function () {
+        var result = changeMode("highest");
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
+      });
+
+      var button = document.querySelector("#lowest-button");
+      button.addEventListener("click", function () {
+        var result = changeMode("lowest");
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
+      });
+
+      var button = document.querySelector("#normal-button");
+      button.addEventListener("click", function () {
+        var result = changeDifficulty("normal");
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
+      });
+
+      var button = document.querySelector("#knockout-button");
+      button.addEventListener("click", function () {
+        var result = changeDifficulty("knockout");
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
+      });
+    </script>
+    <script>
+      document.getElementById("intro-div").innerHTML =
+        "Welcome to <b>Beat That!</b></br>Kindly input the number of dice and players to proceed.";
     </script>
   </body>
 </html>
